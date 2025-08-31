@@ -63,14 +63,12 @@ const MovieResult = ({
                   {movie.overview}
                 </p>
 
-                <div className="pt-2">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="px-6 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-sm font-medium transition-all duration-200 border border-white/20"
-                  >
-                    View Details
-                  </motion.button>
+                <div className="pt-4 border-t border-gray-700/50">
+                    <div className="flex items-center justify-center gap-2 bg-yellow-500/20 px-3 py-2 rounded-full">
+                      <span className="text-yellow-400 text-xs font-medium">
+                        This answer is AI-generated and may contain errors.
+                      </span>
+                    </div>
                 </div>
               </div>
             </div>
