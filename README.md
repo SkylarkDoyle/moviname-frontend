@@ -1,4 +1,4 @@
-# WhatIsTheMovieName - Frontend
+# movíname - Frontend
 
 A modern React application that identifies movies from screenshots using AI-powered image analysis.
 
@@ -24,11 +24,10 @@ A modern React application that identifies movies from screenshots using AI-powe
 
 ```bash
 # Clone the repository
-git clone <repository-url>
-cd whatisthemoviename-frontend
+git clone https://github.com/SkylarkDoyle/moviname.git
 
 # Install dependencies
-npm install
+pnpm install
 
 # Start development server
-npm run dev
+pnpm run dev

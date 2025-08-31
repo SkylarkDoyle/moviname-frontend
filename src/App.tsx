@@ -1,9 +1,14 @@
 import { useEffect, useState, type ChangeEvent, type DragEvent } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Upload, Film, Star } from "lucide-react";
+import { motion } from "framer-motion";
+import { Upload, Film } from "lucide-react";
 import axios from "axios";
+import { extractVideoFrames } from "./utils";
+import Loader from "./components/loader/Loader";
+import MovieResult from "./components/MovieResult";
+import { Splash } from "./components/loader/Splash";
+import BGCollage from "./components/BGCollage";
 
-interface MovieData {
+export interface MovieData {
   poster_url: string;
   title: string;
   release_date: string;
@@ -11,81 +16,104 @@ interface MovieData {
   vote_average?: number;
 }
 
+const ALLOWED_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+  "video/mp4",
+  "video/webm",
+  "video/ogg",
+];
+
 export default function App() {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [movie, setMovie] = useState<MovieData | null>(null);
   const [dragOver, setDragOver] = useState<boolean>(false);
+  const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined);
+  const [loadingTime, setLoadingTime] = useState<number>(0);
+  const [initialLoading, setInitialLoading] = useState<boolean>(true); // Added initial loader state
 
-    // Movie trivia facts for loading screen
-  const triviaFacts = [
-    "The average movie takes about 106 days to film?",
-    "The first movie theater opened in 1905 in Pittsburgh?",
-    "Alfred Hitchcock never won an Oscar for Best Director?",
-    "The Wilhelm Scream has been used in over 400 films?",
-    "The longest movie ever made is 87 hours long?",
-    "Charlie Chaplin once lost a Charlie Chaplin look-alike contest?",
-    "The movie 'Titanic' cost more to make than the actual Titanic?",
-    "Walt Disney was afraid of mice despite creating Mickey Mouse?",
-    "The code in 'The Matrix' is actually sushi recipes?",
-    "Steven Spielberg was rejected from film school three times?",
-    "The first film sequel was made in 1916?",
-    "Movie theaters make most of their profit from concessions?",
-    "The loudest sound in cinema history was in 'Interstellar'?",
-    "Tom Hanks' brother voiced Woody in the Toy Story video games?"
-  ];
-
-  const [currentTrivia, setCurrentTrivia] = useState("");
-
-  const getRandomTrivia = () => {
-    const randomIndex = Math.floor(Math.random() * triviaFacts.length);
-    return triviaFacts[randomIndex];
-  };
-
-  // Add this useEffect after the state declarations
- useEffect(() => {
-  let interval: ReturnType<typeof setInterval>;
-  if (loading) {
-    // Set initial trivia
-    setCurrentTrivia(getRandomTrivia());
-    // Rotate trivia every 3 seconds while loading
-    interval = setInterval(() => {
-      setCurrentTrivia(getRandomTrivia());
+  // Simulate initial loading for 3 seconds
+   useEffect(() => {
+    const timer = setTimeout(() => {
+      setInitialLoading(false);
     }, 3000);
-  }
-  return () => {
-    if (interval) clearInterval(interval);
-  };
-}, [loading]);
+    return () => clearTimeout(timer);
+  }, []);
 
 
   const handleUpload = async () => {
     if (!file) return;
 
     const formData = new FormData();
-    formData.append("file", file);
+
+    if (file.type.startsWith("video/")) {
+      const frames = await extractVideoFrames(file, 4);
+      frames.forEach((frame) => formData.append("files", frame));
+    } else {
+      formData.append("files", file);
+    }
 
     try {
       setLoading(true);
+      setLoadingTime(0);
       setMovie(null);
 
-      const res = await axios.post<MovieData>(`${import.meta.env.VITE_BACKEND_URL}/api/films/analyze`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const res = await axios.post<MovieData>(
+        `${import.meta.env.VITE_BACKEND_URL}/api/films/analyze`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
       setMovie(res.data);
-
     } catch (err) {
       console.error(err);
       alert(`Something went wrong, ${err}`);
-    }
-    finally {
+    } finally {
       setLoading(false);
     }
   };
 
+  // ⬆️ Add this useEffect to increment timer while loading
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval> | null = null;
+    if (loading) {
+      interval = setInterval(() => {
+        setLoadingTime((prev) => prev + 1);
+      }, 1000);
+    } else if (!loading && interval) {
+      clearInterval(interval);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [loading]);
+
+
+
   const handleFileChange = (selectedFile: File | null) => {
+    if (!selectedFile) return;
+
+    const FILE_SIZE_LIMIT = 5 * 1024 * 1024
+
+    if (!ALLOWED_TYPES.includes(selectedFile.type)) {
+      alert(
+        "Only images (jpg, png, webp, gif) or videos (mp4, webm, ogg) are allowed."
+      );
+      return;
+    }
+
+    if (FILE_SIZE_LIMIT < selectedFile.size){
+      alert("File size should be less than 5MB.");
+      return;
+    }
+
     setFile(selectedFile);
     setMovie(null);
+    setPreviewUrl(URL.createObjectURL(selectedFile));
   };
 
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
@@ -101,18 +129,24 @@ export default function App() {
   const handleDrop = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setDragOver(false);
-    
+
     const files = e.dataTransfer.files;
-    if (files.length > 0 && files[0].type.startsWith('image/')) {
+    if (files.length > 0) {
       handleFileChange(files[0]);
     }
   };
 
+   if (initialLoading) {
+    return (
+       <Splash />
+    );
+  }
+
   return (
-     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-black text-white">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))]"></div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-black text-white">
       
+      <BGCollage />
+
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-4 sm:p-6">
         {/* Header */}
         <motion.div
@@ -121,14 +155,20 @@ export default function App() {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="text-center mb-8 sm:mb-12"
         >
-          <div className="flex items-center justify-center gap-3 mb-3">
+          <div className="flex items-center justify-center gap-1 mb-3">
             <Film className="w-8 h-8 sm:w-10 sm:h-10 text-red-500" />
-            <h1 className="text-2xl sm:text-5xl font-bold bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">
-              WhatIsTheMovieName
+            <h1 className="text-3xl sm:text-5xl font-bold bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">
+              movíname
+              <motion.span
+                className="inline-block w-1 h-1 bg-red-500 rounded-full ml-1"
+                animate={{ scale: [1, 1.5, 1], opacity: [1, 0.7, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
             </h1>
+           
           </div>
           <p className="text-gray-400 text-xs sm:text-lg font-medium">
-            Identify any movie from a single screenshot
+            Discover Cinema Through AI
           </p>
         </motion.div>
 
@@ -142,12 +182,12 @@ export default function App() {
           <div className="space-y-6">
             <div
               className={`relative bg-gray-800/50 backdrop-blur-sm border-2 border-dashed rounded-3xl transition-all duration-300 ${
-                dragOver 
-                  ? 'border-red-400 bg-red-500/10 scale-105' 
-                  : file 
-                  ? 'border-green-400 bg-green-500/10' 
-                  : 'border-gray-600 hover:border-gray-500'
-              } ${file ? 'p-4' : 'p-8 sm:p-12'}`}
+                dragOver
+                  ? "border-red-400 bg-red-500/10 scale-105"
+                  : file
+                  ? "border-green-400 bg-green-500/10"
+                  : "border-gray-600 hover:border-gray-500"
+              } ${file ? "p-4" : "p-8 sm:p-12"}`}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
@@ -156,12 +196,27 @@ export default function App() {
                 // Image Preview with Scanning Effect
                 <div className="relative">
                   <div className="relative rounded-2xl overflow-hidden">
-                    <img
+                    {file?.type.startsWith("video/") ? (
+                      <video
+                        src={previewUrl}
+                        autoPlay
+                        muted
+                        // controls
+                        className="w-full h-64 object-cover"
+                      />
+                    ) : (
+                      <img
+                        src={previewUrl}
+                        alt="preview"
+                        className="w-full h-64 object-cover"
+                      />
+                    )}
+                    {/* <img
                       src={URL.createObjectURL(file)}
                       alt="Upload preview"
                       className="w-full h-64 object-cover"
                     />
-                    
+                     */}
                     {/* Google Lens Style Transparent Scanning Effect */}
                     {loading && (
                       <>
@@ -173,13 +228,14 @@ export default function App() {
                           transition={{
                             duration: 2.5,
                             repeat: Infinity,
-                            ease: "easeInOut"
+                            ease: "easeInOut",
                           }}
                           style={{
-                            background: "linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 50%, transparent 100%)"
+                            background:
+                              "linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 50%, transparent 100%)",
                           }}
                         />
-                        
+
                         {/* Subtle moving highlight line */}
                         <motion.div
                           className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white/60 to-transparent shadow-lg"
@@ -188,34 +244,46 @@ export default function App() {
                           transition={{
                             duration: 2.5,
                             repeat: Infinity,
-                            ease: "easeInOut"
+                            ease: "easeInOut",
                           }}
                         />
-                        
+
                         {/* Corner indicators */}
                         <div className="absolute inset-0 pointer-events-none">
-                          <motion.div 
+                          <motion.div
                             className="absolute top-3 left-3 w-8 h-8 border-l-2 border-t-2 border-white/70"
                             animate={{ opacity: [0.7, 1, 0.7] }}
                             transition={{ duration: 1.5, repeat: Infinity }}
                           />
-                          <motion.div 
+                          <motion.div
                             className="absolute top-3 right-3 w-8 h-8 border-r-2 border-t-2 border-white/70"
                             animate={{ opacity: [0.7, 1, 0.7] }}
-                            transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}
+                            transition={{
+                              duration: 1.5,
+                              repeat: Infinity,
+                              delay: 0.3,
+                            }}
                           />
-                          <motion.div 
+                          <motion.div
                             className="absolute bottom-3 left-3 w-8 h-8 border-l-2 border-b-2 border-white/70"
                             animate={{ opacity: [0.7, 1, 0.7] }}
-                            transition={{ duration: 1.5, repeat: Infinity, delay: 0.6 }}
+                            transition={{
+                              duration: 1.5,
+                              repeat: Infinity,
+                              delay: 0.6,
+                            }}
                           />
-                          <motion.div 
+                          <motion.div
                             className="absolute bottom-3 right-3 w-8 h-8 border-r-2 border-b-2 border-white/70"
                             animate={{ opacity: [0.7, 1, 0.7] }}
-                            transition={{ duration: 1.5, repeat: Infinity, delay: 0.9 }}
+                            transition={{
+                              duration: 1.5,
+                              repeat: Infinity,
+                              delay: 0.9,
+                            }}
                           />
                         </div>
-                        
+
                         {/* Analysis text overlay */}
                         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
                           <p className="text-white/90 text-sm font-medium flex items-center justify-center gap-2">
@@ -230,7 +298,7 @@ export default function App() {
                       </>
                     )}
                   </div>
-                  
+
                   {/* File info */}
                   <div className="mt-4 text-center">
                     <p className="text-sm font-medium text-gray-300 truncate">
@@ -240,14 +308,24 @@ export default function App() {
                       {(file.size / 1024 / 1024).toFixed(2)} MB
                     </p>
                   </div>
-                  
+
                   {/* Change file button */}
                   <button
                     onClick={() => handleFileChange(null)}
                     className="absolute top-2 right-2 bg-black/60 hover:bg-black/80 rounded-full p-2 transition-colors"
                   >
-                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <svg
+                      className="w-4 h-4 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
                     </svg>
                   </button>
                 </div>
@@ -260,13 +338,13 @@ export default function App() {
                   >
                     <Upload className="w-8 h-8 text-gray-400" />
                   </motion.div>
-                  
+
                   <div>
                     <p className="text-lg font-semibold mb-2">
-                      Drop your screenshot here
+                      Drop your movie screenshot/clip here
                     </p>
                     <p className="text-sm text-gray-400">
-                      or click to browse files
+                      or click to select a file
                     </p>
                   </div>
                 </div>
@@ -274,12 +352,12 @@ export default function App() {
 
               <input
                 type="file"
-                accept="image/*"
-                onChange={(e: ChangeEvent<HTMLInputElement>) => 
+                accept="image/*,video/*"
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   handleFileChange(e.target.files?.[0] || null)
                 }
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                aria-label="Upload movie screenshot to WhatIsTheMovieName"
+                aria-label="Upload movie screenshot to movíname"
               />
             </div>
 
@@ -290,142 +368,16 @@ export default function App() {
               className="w-full py-4 rounded-2xl font-semibold text-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 transform hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-red-500/25"
               whileTap={{ scale: 0.98 }}
             >
-              {loading ? 'Analyzing...' : 'Analyze Screenshot'}
+              {loading ? "Analyzing..." : "Identify Movie"}
             </motion.button>
           </div>
         </motion.div>
 
         {/* Loading Modal */}
-        <AnimatePresence>
-          {loading && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            >
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                className="bg-gray-800/90 backdrop-blur-md rounded-3xl p-8 max-w-md w-full space-y-8 border border-gray-700/50"
-              >
-                {/* Do you know section */}
-                <div className="text-center space-y-4">
-                  <h3 className="text-xl font-bold text-white flex items-center justify-center gap-2">
-                    <span className="text-2xl">🎬</span>
-                    Do you know?
-                  </h3>
-                  <motion.p 
-                    key={currentTrivia}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-gray-300 leading-relaxed text-sm"
-                  >
-                    {currentTrivia}
-                  </motion.p>
-                </div>
-                
-                {/* Loader section */}
-                <div className="text-center space-y-4">
-                  <div className="relative mx-auto w-16 h-16">
-                    <div className="absolute inset-0 rounded-full border-4 border-gray-700"></div>
-                    <div className="absolute inset-0 rounded-full border-4 border-red-500 border-t-transparent animate-spin"></div>
-                    <div className="absolute inset-2 rounded-full border-2 border-red-400 border-b-transparent animate-spin" style={{ animationDirection: 'reverse', animationDuration: '0.75s' }}></div>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-lg font-medium text-gray-300">
-                      Analyzing your screenshot...
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      This may take a few moments
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        
+        <Loader loading={loading} loadingTime={loadingTime} />
 
         {/* Movie Result */}
-        <AnimatePresence>
-          {movie && (
-            <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-    >
-             <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-gray-800/90 backdrop-blur-md rounded-3xl overflow-hidden shadow-2xl border border-gray-700/50 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-      >
-                <div className="flex flex-col sm:flex-row">
-                  {/* Poster */}
-                  <div className="sm:w-1/3 relative">
-                    <img
-                      src={movie.poster_url}
-                      alt={`${movie.title} poster`}
-                      className="w-full h-64 sm:h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent sm:hidden"></div>
-                  </div>
-                  
-                  {/* Content */}
-                  <div className="sm:w-2/3 p-6 sm:p-8 space-y-4">
-                    <div className="space-y-2">
-                      <h2 className="text-2xl sm:text-3xl font-bold text-white">
-                        {movie.title}
-                      </h2>
-                      
-                      <div className="flex flex-wrap items-center gap-4 text-sm">
-                        <span className="text-gray-400">
-                          {new Date(movie.release_date).getFullYear()}
-                        </span>
-                        
-                        {movie.vote_average && (
-                          <div className="flex items-center gap-1 bg-yellow-500/20 px-2 py-1 rounded-full">
-                            <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                            <span className="text-yellow-400 font-medium">
-                              {movie.vote_average.toFixed(1)}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    
-                    <p className="h-[80px] overflow-auto text-gray-300 leading-relaxed text-sm sm:text-base">
-                      {movie.overview}
-                    </p>
-                    
-                    <div className="pt-2">
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="px-6 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-sm font-medium transition-all duration-200 border border-white/20"
-                      >
-                        View Details
-                      </motion.button>
-                    </div>
-                  </div>
-                </div>
-
-                  <button
-          onClick={() => setMovie(null)}
-          className="absolute top-4 right-4 bg-black/60 hover:bg-black/80 rounded-full p-2 transition-colors z-10"
-        >
-          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <MovieResult movie={movie} setMovie={setMovie} />
       </div>
     </div>
   );
