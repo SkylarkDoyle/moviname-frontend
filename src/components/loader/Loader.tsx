@@ -10,20 +10,20 @@ const Loader = ({
 }) => {
   // Movie trivia facts for loading screen
   const triviaFacts = [
-    "The average movie takes about 106 days to film?",
-    "The first movie theater opened in 1905 in Pittsburgh?",
-    "Alfred Hitchcock never won an Oscar for Best Director?",
-    "The Wilhelm Scream has been used in over 400 films?",
-    "The longest movie ever made is 87 hours long?",
-    "Charlie Chaplin once lost a Charlie Chaplin look-alike contest?",
-    "The movie 'Titanic' cost more to make than the actual Titanic?",
-    "Walt Disney was afraid of mice despite creating Mickey Mouse?",
-    "The code in 'The Matrix' is actually sushi recipes?",
-    "Steven Spielberg was rejected from film school three times?",
-    "The first film sequel was made in 1916?",
-    "Movie theaters make most of their profit from concessions?",
-    "The loudest sound in cinema history was in 'Interstellar'?",
-    "Tom Hanks' brother voiced Woody in the Toy Story video games?",
+    "Thunderbolts* became one of Marvel's biggest hits of 2025",
+    "A Minecraft Movie broke records as the highest-grossing video game adaptation",
+    "Live-action Lilo & Stitch earned over $1 billion at the global box office",
+    "TRON: Ares is the first TRON film in over a decade",
+    "AI was used to de-age actors in multiple 2025 blockbusters",
+    "Mission: Impossible - The Final Reckoning marks Tom Cruise's last MI film",
+    "Zootopia 2 is Disney's most anticipated sequel of 2025",
+    "The new Superman film reboots the DC Universe with James Gunn",
+    "Virtual production volumes replaced green screens in 70% of 2025 films",
+    "Ryan Coogler's Sinners explores themes of identity and redemption",
+    "Snow White faced controversy but still became a box office success",
+    "The Avatar franchise continues to dominate with cutting-edge underwater CGI",
+    "Deadpool & Wolverine proved R-rated superhero films can break records",
+    "Streaming platforms now produce more original content than traditional studios",
   ];
 
   const [currentTrivia, setCurrentTrivia] = useState("");
