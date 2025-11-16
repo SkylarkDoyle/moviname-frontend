@@ -7,6 +7,7 @@ import Loader from "./components/loader/Loader";
 import MovieResult from "./components/MovieResult";
 import { Splash } from "./components/loader/Splash";
 import BGCollage from "./components/BGCollage";
+import { useSearchParams } from "react-router-dom";
 
 export interface MovieData {
   poster_url: string;
@@ -27,6 +28,9 @@ const ALLOWED_TYPES = [
 ];
 
 export default function App() {
+  // Query param handling after initial loading
+  const [searchParams] = useSearchParams();
+
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [movie, setMovie] = useState<MovieData | null>(null);
@@ -43,6 +47,21 @@ export default function App() {
     }, 3000);
     return () => clearTimeout(timer);
   }, []);
+
+  // Check query param once on mount
+  useEffect(() => {
+    const urlParam = searchParams.get("clipUrl");
+    if (urlParam) {
+      setImageUrl(urlParam); // Only set the state here
+    }
+  }, [searchParams]);
+
+  // Trigger handleUpload after imageUrl is set and initialLoading is done
+  useEffect(() => {
+    if (imageUrl && !initialLoading) {
+      handleUpload();
+    }
+  }, [imageUrl, initialLoading]);
 
   const handleUpload = async () => {
     if (!file && !imageUrl) return;
@@ -82,12 +101,11 @@ export default function App() {
             headers: { "Content-Type": "multipart/form-data" },
           }
         );
-      
       }
 
-        if (res) {
-          setMovie(res.data);
-        }
+      if (res) {
+        setMovie(res.data);
+      }
     } catch (err) {
       console.error(err);
       alert(`Something went wrong, ${err}`);
