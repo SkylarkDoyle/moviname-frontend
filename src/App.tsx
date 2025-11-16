@@ -1,8 +1,8 @@
 import { useEffect, useState, type ChangeEvent, type DragEvent } from "react";
 import { motion } from "framer-motion";
-import { Upload, Film, Link } from "lucide-react";
+import { Upload, Film, Link, X } from "lucide-react";
 import axios from "axios";
-import { extractVideoFrames } from "./utils";
+// import { extractVideoFrames } from "./utils";
 import Loader from "./components/loader/Loader";
 import MovieResult from "./components/MovieResult";
 import { Splash } from "./components/loader/Splash";
@@ -61,7 +61,7 @@ export default function App() {
     if (imageUrl && !initialLoading) {
       handleUpload();
     }
-  }, [imageUrl, initialLoading]);
+  }, [initialLoading]);
 
   const handleUpload = async () => {
     if (!file && !imageUrl) return;
@@ -87,12 +87,7 @@ export default function App() {
       } else if (file) {
         const formData = new FormData();
 
-        if (file.type.startsWith("video/")) {
-          const frames = await extractVideoFrames(file, 4);
-          frames.forEach((frame) => formData.append("files", frame));
-        } else {
-          formData.append("files", file);
-        }
+        formData.append("files", file);
 
         res = await axios.post<MovieData>(
           `${import.meta.env.VITE_BACKEND_URL}/api/films/analyze`,
@@ -137,7 +132,7 @@ export default function App() {
       return;
     }
 
-    const FILE_SIZE_LIMIT = 5 * 1024 * 1024;
+    const FILE_SIZE_LIMIT = 10 * 1024 * 1024;
 
     if (!ALLOWED_TYPES.includes(selectedFile.type)) {
       alert(
@@ -147,7 +142,7 @@ export default function App() {
     }
 
     if (FILE_SIZE_LIMIT < selectedFile.size) {
-      alert("File size should be less than 5MB.");
+      alert("File size should be less than 10MB.");
       return;
     }
 
@@ -348,7 +343,7 @@ export default function App() {
                   {/* Change file button */}
                   <button
                     onClick={() => handleFileChange(null)}
-                    className="absolute top-2 right-2 bg-black/60 hover:bg-black/80 rounded-full p-2 transition-colors"
+                    className="absolute z-[1000] top-2 right-2 bg-black/60 hover:bg-black/80 rounded-full p-2 transition-colors"
                   >
                     <svg
                       className="w-4 h-4 text-red"
@@ -428,11 +423,22 @@ export default function App() {
                     value={imageUrl}
                     placeholder="Supports X (Twitter), Instagram, TikTok"
                     disabled={!!file}
-                    className="w-full pl-12 pr-4 py-4 bg-gray-800/50 border-2 border-gray-600 rounded-2xl text-white placeholder-gray-500 focus:outline-none focus:border-red-500 focus:bg-gray-800/70 transition-all duration-300 hover:border-gray-500"
+                    className="w-full pl-12 pr-8 py-4 bg-gray-800/50 border-2 border-gray-600 rounded-2xl text-white placeholder-gray-500 focus:outline-none focus:border-red-500 focus:bg-gray-800/70 transition-all duration-300 hover:border-gray-500"
                     onChange={(e) => {
                       setImageUrl(e.target.value);
                     }}
                   />
+
+                  {imageUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setImageUrl("")}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-red-400 hover:text-white transition-colors"
+                      aria-label="Clear URL"
+                    >
+                      <X />
+                    </button>
+                  )}
                 </div>
               </motion.div>
             </div>

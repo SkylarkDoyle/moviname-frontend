@@ -59,7 +59,7 @@ const MovieResult = ({
                   </div>
                 </div>
 
-                <p className="h-[80px] overflow-auto text-gray-300 leading-relaxed text-sm sm:text-base">
+                <p className="h-[100px] overflow-auto text-gray-300 leading-relaxed text-sm sm:text-base">
                   {movie.overview}
                 </p>
 
