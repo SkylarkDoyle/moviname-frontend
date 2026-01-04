@@ -1,9 +1,10 @@
 import { useEffect, useState, type ChangeEvent, type DragEvent } from "react";
 import { motion } from "framer-motion";
 import { Upload, Film, Link, X } from "lucide-react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 // import { extractVideoFrames } from "./utils";
 import Loader from "./components/loader/Loader";
+import ErrorModal from "./components/ErrorModal";
 import MovieResult from "./components/MovieResult";
 import { Splash } from "./components/loader/Splash";
 import BGCollage from "./components/BGCollage";
@@ -39,6 +40,10 @@ export default function App() {
   const [loadingTime, setLoadingTime] = useState<number>(0);
   const [initialLoading, setInitialLoading] = useState<boolean>(true); // Added initial loader state
   const [imageUrl, setImageUrl] = useState<string>("");
+  const [error, setError] = useState<{ show: boolean; message: string }>({
+    show: false,
+    message: "",
+  });
 
   // Simulate initial loading for 3 seconds
   useEffect(() => {
@@ -103,7 +108,17 @@ export default function App() {
       }
     } catch (err) {
       console.error(err);
-      alert(`Something went wrong, ${err}`);
+      let message = "Something went wrong. Please try again.";
+      
+      if (err instanceof AxiosError && err.response?.data) {
+        // Try to get message from backend response
+        const data = err.response.data as any;
+        message = data.detail || data.message || data.error || err.message;
+      } else if (err instanceof Error) {
+        message = err.message;
+      }
+      
+      setError({ show: true, message });
     } finally {
       setLoading(false);
     }
@@ -480,6 +495,13 @@ export default function App() {
 
         {/* Loading Modal */}
         <Loader loading={loading} loadingTime={loadingTime} />
+
+        {/* Error Modal */}
+        <ErrorModal
+          isOpen={error.show}
+          message={error.message}
+          onClose={() => setError({ show: false, message: "" })}
+        />
 
         {/* Movie Result */}
         <MovieResult movie={movie} setMovie={setMovie} />

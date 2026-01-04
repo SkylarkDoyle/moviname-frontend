@@ -11,18 +11,21 @@ const BGCollage = () => {
           title="THUNDERBOLTS*"
           colors="linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)"
           delay={0}
+          url="https://image.tmdb.org/t/p/w1280/hqcexYHbiTBfDIdDWxrxPtVndBX.jpg"
         />
         <MoviePoster
           className="w-24 h-36 top-24 right-16 text-white"
           title="LILO & STITCH"
           colors="linear-gradient(135deg, #ff6b9d 0%, #4ecdc4 50%, #45b7d1 100%)"
           delay={1}
+          url="https://www.themoviedb.org/t/p/w1280/ckQzKpQJO4ZQDCN5evdpKcfm7Ys.jpg"
         />
         <MoviePoster
           className="w-18 h-28 bottom-16 left-20 text-green-900"
           title="MINECRAFT"
           colors="linear-gradient(135deg, #228b22 0%, #32cd32 50%, #90ee90 100%)"
           delay={2}
+          url="https://image.tmdb.org/t/p/w500/iPPTGh2OXuIv6d7cwuoPkw8govp.jpg"
         />
         <MoviePoster
           className="w-22 h-32 bottom-20 right-10 text-cyan-400"
@@ -30,18 +33,21 @@ const BGCollage = () => {
           colors="linear-gradient(135deg, #000000 0%, #ff4500 50%, #000000 100%)"
           borderColor="#ff4500"
           delay={3}
+          url="https://www.themoviedb.org/t/p/w1280/chpWmskl3aKm1aTZqUHRCtviwPy.jpg"
         />
         <MoviePoster
           className="w-19 h-28 top-1/2 left-5 text-red-800"
           title="SNOW WHITE"
           colors="linear-gradient(135deg, #8b0000 0%, #ff1493 50%, #ffffff 100%)"
           delay={4}
+          url="https://www.themoviedb.org/t/p/w1280/xWWg47tTfparvjK0WJNX4xL8lW2.jpg"
         />
         <MoviePoster
           className="w-16 h-24 top-1/3 right-5 text-white"
           title="ZOOTOPIA 2"
           colors="linear-gradient(135deg, #ff8c00 0%, #32cd32 50%, #1e90ff 100%)"
           delay={5}
+          url="https://www.themoviedb.org/t/p/w1280/bjUWGw0Ao0qVWxagN3VCwBJHVo6.jpg"
         />
       </div>
 

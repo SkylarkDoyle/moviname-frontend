@@ -62,6 +62,10 @@ const MovieResult = ({
                 <p className="h-[100px] overflow-auto text-gray-300 leading-relaxed text-sm sm:text-base">
                   {movie.overview}
                 </p>
+                <p className="text-red-500 text-[10px] italic">
+                  AI-generated results may not always be accurate.
+                </p>
+
 
                 <div className="pt-2 w-full">
                   <a
