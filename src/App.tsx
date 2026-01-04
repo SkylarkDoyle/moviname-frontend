@@ -109,7 +109,7 @@ export default function App() {
     } catch (err) {
       console.error(err);
       let message = "Something went wrong. Please try again.";
-      
+
       if (err instanceof AxiosError && err.response?.data) {
         // Try to get message from backend response
         const data = err.response.data as any;
@@ -117,7 +117,7 @@ export default function App() {
       } else if (err instanceof Error) {
         message = err.message;
       }
-      
+
       setError({ show: true, message });
     } finally {
       setLoading(false);
