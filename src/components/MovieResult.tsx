@@ -41,7 +41,7 @@ const MovieResult = ({
               <div className="sm:w-2/3 p-6 sm:p-8 space-y-4">
                 <div className="space-y-2">
                   <a
-                    href={`https://www.google.com/search?q=${encodeURIComponent(movie.title + " movie")}`}
+                    href={`https://www.google.com/search?q=${encodeURIComponent(movie.title + " movie watch now")}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-block hover:opacity-80 transition-opacity"
@@ -70,9 +70,9 @@ const MovieResult = ({
                 <p className="h-[120px] overflow-auto text-gray-300 leading-relaxed text-sm sm:text-base">
                   {movie.overview}
                 </p>
-                {/* <p className="text-red-500 text-[10px] italic">
+                <p className="text-red-500 text-[10px] italic">
                   AI-generated results may not always be accurate.
-                </p> */}
+                </p>
 
                 <div className="pt-2 w-full space-y-4">
                   <motion.button
