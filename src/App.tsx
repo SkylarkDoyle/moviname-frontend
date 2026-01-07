@@ -9,6 +9,7 @@ import MovieResult from "./components/MovieResult";
 import { Splash } from "./components/loader/Splash";
 import BGCollage from "./components/BGCollage";
 import { useSearchParams } from "react-router-dom";
+import { decodeMovieData } from "./utils/shareUtils";
 
 export interface MovieData {
   poster_url: string;
@@ -45,13 +46,24 @@ export default function App() {
     message: "",
   });
 
-  // Simulate initial loading for 3 seconds
+  // Handle initial loading and shared links
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const checkShareParam = async () => {
+      const shareToken = searchParams.get("share");
+      if (shareToken) {
+        const decodedMovie = await decodeMovieData(shareToken);
+        if (decodedMovie) {
+          setMovie(decodedMovie);
+        }
+      }
       setInitialLoading(false);
+    };
+
+    const timer = setTimeout(() => {
+      checkShareParam();
     }, 3000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [searchParams]);
 
   // Check query param once on mount
   useEffect(() => {
@@ -436,7 +448,7 @@ export default function App() {
                   <input
                     type="url"
                     value={imageUrl}
-                    placeholder="Supports X (Twitter), Instagram, TikTok"
+                    placeholder="Supports X (Twitter), Instagram, Facebook, WhatsApp"
                     disabled={!!file}
                     className="w-full pl-12 pr-8 py-4 bg-gray-800/50 border-2 border-gray-600 rounded-2xl text-white placeholder-gray-500 focus:outline-none focus:border-red-500 focus:bg-gray-800/70 transition-all duration-300 hover:border-gray-500"
                     onChange={(e) => {
