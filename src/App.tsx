@@ -8,6 +8,7 @@ import ErrorModal from "./components/ErrorModal";
 import MovieResult from "./components/MovieResult";
 import { Splash } from "./components/loader/Splash";
 import BGCollage from "./components/BGCollage";
+import AdBanner from "./components/AdBanner";
 import { useSearchParams } from "react-router-dom";
 import { decodeMovieData } from "./utils/shareUtils";
 
@@ -229,6 +230,8 @@ export default function App() {
             Discover Cinema Through AI
           </p>
         </motion.div>
+
+        <AdBanner />
 
         {/* Upload Card */}
         <motion.div
