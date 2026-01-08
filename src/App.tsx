@@ -217,7 +217,7 @@ export default function App() {
           <div className="flex items-center justify-center gap-1 mb-3">
             <Film className="w-8 h-8 sm:w-10 sm:h-10 text-red-500" />
             <h1 className="text-3xl sm:text-5xl font-bold bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">
-              movíname
+              movíename
               <motion.span
                 className="inline-block w-1 h-1 bg-red-500 rounded-full ml-1"
                 animate={{ scale: [1, 1.5, 1], opacity: [1, 0.7, 1] }}

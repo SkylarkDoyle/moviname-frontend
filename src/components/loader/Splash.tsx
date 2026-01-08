@@ -72,7 +72,7 @@ export const Splash = () => {
             }}
             transition={{ duration: 3, repeat: Infinity }}
           >
-            movíname
+            movíename
             <motion.span
               className="inline-block w-3 h-3 bg-red-500 rounded-full ml-3"
               animate={{ scale: [1, 1.5, 1], opacity: [1, 0.7, 1] }}
@@ -80,7 +80,7 @@ export const Splash = () => {
             />
           </motion.h1>
           <p className="text-xl font-light text-gray-500 uppercase tracking-widest">
-            Discover Cinema
+            Discover Cinema Through AI
           </p>
         </div>
       </div>
