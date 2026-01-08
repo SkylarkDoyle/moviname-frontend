@@ -41,13 +41,16 @@ const MovieResult = ({
               <div className="sm:w-2/3 p-6 sm:p-8 space-y-4">
                 <div className="space-y-2">
                   <a
-                    href={`https://www.google.com/search?q=${encodeURIComponent(movie.title + " movie watch now")}`}
+                    href={`https://www.google.com/search?q=${encodeURIComponent(
+                      movie.title + " movie watch now"
+                    )}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-block hover:opacity-80 transition-opacity"
                   >
                     <h2 className="text-2xl sm:text-3xl font-bold text-white">
-                      {movie.title} <SquareArrowOutUpRightIcon className="inline-block w-4 h-4" />
+                      {movie.title}{" "}
+                      <SquareArrowOutUpRightIcon className="inline-block w-4 h-4" />
                     </h2>
                   </a>
 
@@ -82,7 +85,7 @@ const MovieResult = ({
                         try {
                           await navigator.share({
                             title: `Movíname: ${movie.title}`,
-                            text: `Check out this movie I discovered on Movíname: ${movie.title}`,
+                            text: `Found it! The movie is ${movie.title}. Identify any movie from a clip for free here:`,
                             url: shareUrl,
                           });
                         } catch (err) {
@@ -132,7 +135,7 @@ const MovieResult = ({
                             `https://twitter.com/intent/tweet?url=${encodeURIComponent(
                               url
                             )}&text=${encodeURIComponent(
-                              `Check out this movie I discovered on @moviname: ${movie.title}`
+                              `Found it! The movie is ${movie.title}. Identify any movie from a clip for free here:`
                             )}`,
                             "_blank"
                           ),
@@ -183,7 +186,7 @@ const MovieResult = ({
                             try {
                               await navigator.share({
                                 title: movie.title,
-                                text: `Check this out on Movíname!`,
+                                text: `Found it! The movie is ${movie.title}. Identify any movie from a clip for free here:`,
                                 url: url,
                               });
                             } catch (e) {
@@ -218,7 +221,7 @@ const MovieResult = ({
                             try {
                               await navigator.share({
                                 title: movie.title,
-                                text: `Check this out on Movíname!`,
+                                text: `Found it! The movie is ${movie.title}. Identify any movie from a clip for free here:`,
                                 url: url,
                               });
                             } catch (e) {
@@ -249,7 +252,7 @@ const MovieResult = ({
                         action: (url: string) =>
                           window.open(
                             `https://api.whatsapp.com/send?text=${encodeURIComponent(
-                              `Check out this movie I discovered on Movíname: ${movie.title} - ${url}`
+                              `Found it! The movie is ${movie.title}. Identify any movie from a clip for free here: ${url}`
                             )}`,
                             "_blank"
                           ),
