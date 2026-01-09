@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
+Allow: /find-movie
+Allow: /what-movie-is-this
+Allow: /identify
 
 Sitemap: https://www.moviename.site/sitemap.xml
