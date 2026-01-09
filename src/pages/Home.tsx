@@ -27,7 +27,7 @@ export default function Home() {
   const [searchParams] = useSearchParams();
 
   const [file, setFile] = useState<File | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [movie, setMovie] = useState<MovieData | null>(null);
   const [dragOver, setDragOver] = useState<boolean>(false);
   const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined);
