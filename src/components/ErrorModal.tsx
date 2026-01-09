@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { AlertTriangle, X } from "lucide-react";
+import AdBanner from "./AdBanner";
 
 interface ErrorModalProps {
   isOpen: boolean;
@@ -28,6 +29,8 @@ const ErrorModal = ({ isOpen, onClose, message }: ErrorModalProps) => {
           >
             <div className="flex flex-col items-center text-center space-y-6">
               {/* Icon */}
+              <AdBanner />
+
               <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mb-2">
                 <AlertTriangle className="w-8 h-8 text-red-500" />
               </div>

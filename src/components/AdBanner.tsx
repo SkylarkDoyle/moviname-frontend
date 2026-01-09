@@ -62,7 +62,7 @@ const AdBanner = () => {
          - Tablet (>640px): Scale to 0.75 (approx 546px width)
          - Desktop (>768px): No scale (728px width)
       */}
-      <div className="relative h-[90px] w-[728px] origin-center transform scale-[0.42] sm:scale-75 md:scale-100 transition-transform duration-300">
+      <div className="relative h-[90px] w-[728px] origin-center transform scale-[0.60] sm:scale-75 md:scale-100 transition-transform duration-300">
         <div ref={containerRef} className="w-[728px] h-[90px]" />
       </div>
     </div>

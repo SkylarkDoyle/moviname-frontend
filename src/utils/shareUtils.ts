@@ -1,4 +1,4 @@
-import type { MovieData } from "../App";
+import type { MovieData } from "../types";
 import LZString from "lz-string";
 import axios from "axios";
 

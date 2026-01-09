@@ -1,8 +1,9 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import type { MovieData } from "../App";
+import type { MovieData } from "../types";
 import { SquareArrowOutUpRightIcon, Star } from "lucide-react";
 import { generateShareUrl } from "../utils/shareUtils";
+import AdBanner from "./AdBanner";
 
 const MovieResult = ({
   movie,
@@ -36,6 +37,7 @@ const MovieResult = ({
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent sm:hidden"></div>
               </div>
+              <AdBanner />
 
               {/* Content */}
               <div className="sm:w-2/3 p-6 sm:p-8 space-y-4">

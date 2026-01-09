@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import AdBanner from "../AdBanner";
 
 const Loader = ({
   loading,
@@ -99,12 +100,13 @@ const Loader = ({
               </div>
               <div className="space-y-1">
                 <p className="text-lg font-medium text-gray-300">
-                   Searching the reel for answers...
+                  Searching the reel for answers...
                 </p>
                 <p className="text-sm text-gray-500">
                   This may take a few moments
                 </p>
               </div>
+              <AdBanner />
             </div>
           </motion.div>
         </motion.div>
