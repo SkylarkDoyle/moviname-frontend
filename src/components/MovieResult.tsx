@@ -27,6 +27,7 @@ const MovieResult = ({
             exit={{ scale: 0.9, opacity: 0 }}
             className="bg-gray-800/90 backdrop-blur-md rounded-3xl overflow-hidden shadow-2xl border border-gray-700/50 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
           >
+            <AdBanner />
             <div className="flex flex-col sm:flex-row">
               {/* Poster */}
               <div className="sm:w-1/3 relative">
@@ -37,7 +38,7 @@ const MovieResult = ({
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent sm:hidden"></div>
               </div>
-              <AdBanner />
+              {/* <AdBanner /> */}
 
               {/* Content */}
               <div className="sm:w-2/3 p-6 sm:p-8 space-y-4">
